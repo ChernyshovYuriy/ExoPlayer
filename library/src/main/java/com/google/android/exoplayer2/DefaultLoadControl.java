@@ -45,10 +45,10 @@ public final class DefaultLoadControl implements LoadControl {
 
   /**
    * The default duration of media that must be buffered for playback to resume after a rebuffer,
-   * in milliseconds. A rebuffer is defined to be caused by buffer depletion rather than a user
+   * in milliseconds. A rebuffer is defined to be caus`ed by buffer depletion rather than a user
    * action.
    */
-  public static final int DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS  = 5000;
+  public static final int DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS  = 30000;
 
   private static final int ABOVE_HIGH_WATERMARK = 0;
   private static final int BETWEEN_WATERMARKS = 1;

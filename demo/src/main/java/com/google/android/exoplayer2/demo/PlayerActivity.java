@@ -25,7 +25,9 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,6 +105,7 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
   private Timeline.Window window;
   private EventLogger eventLogger;
   private SimpleExoPlayerView simpleExoPlayerView;
+  private FrameLayout mView;
   private LinearLayout debugRootView;
   private TextView debugTextView;
   private Button retryButton;
@@ -140,9 +143,13 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
     retryButton = (Button) findViewById(R.id.retry_button);
     retryButton.setOnClickListener(this);
 
-    simpleExoPlayerView = (SimpleExoPlayerView) findViewById(R.id.player_view);
+    mView = (FrameLayout)findViewById(R.id.test_view_id);
+
+    simpleExoPlayerView = new SimpleExoPlayerView(getApplicationContext());
     simpleExoPlayerView.setControllerVisibilityListener(this);
     simpleExoPlayerView.requestFocus();
+
+    mView.addView(simpleExoPlayerView);
   }
 
   @Override
@@ -209,13 +216,26 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
 
   @Override
   public void onClick(View view) {
-    if (view == retryButton) {
+    if (view == /*retryButton*/null) {
       initializePlayer();
     } else if (view.getParent() == debugRootView) {
-      MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
-      if (mappedTrackInfo != null) {
-        trackSelectionHelper.showSelectionDialog(this, ((Button) view).getText(),
-            trackSelector.getCurrentMappedTrackInfo(), (int) view.getTag());
+
+      if ((int)view.getTag() == 1000) {
+        showToast("Add Video");
+        if (mView.indexOfChild(simpleExoPlayerView) == -1) {
+          mView.addView(simpleExoPlayerView);
+        }
+      } else if ((int)view.getTag() == 1001) {
+        showToast("Remove Video");
+        if (mView.indexOfChild(simpleExoPlayerView) != -1) {
+          mView.removeView(simpleExoPlayerView);
+        }
+      } else {
+        MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
+        if (mappedTrackInfo != null) {
+          trackSelectionHelper.showSelectionDialog(this, ((Button) view).getText(),
+                  trackSelector.getCurrentMappedTrackInfo(), (int) view.getTag());
+        }
       }
     }
   }
@@ -521,6 +541,18 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
         debugRootView.addView(button, debugRootView.getChildCount() - 1);
       }
     }
+
+    Button addVideoBtn = new Button(this);
+    addVideoBtn.setText("Add Vid");
+    addVideoBtn.setTag(1000);
+    addVideoBtn.setOnClickListener(this);
+    debugRootView.addView(addVideoBtn, debugRootView.getChildCount() - 1);
+
+    Button removeVideoBtn = new Button(this);
+    removeVideoBtn.setText("Rem Vid");
+    removeVideoBtn.setTag(1001);
+    removeVideoBtn.setOnClickListener(this);
+    debugRootView.addView(removeVideoBtn, debugRootView.getChildCount() - 1);
   }
 
   private void showControls() {
